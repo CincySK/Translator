@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Translator</title>
+    <style>
+        body {
+            background: linear-gradient(180deg, #E0F7FA 0%, #FCE4EC 100%);
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            color: #555;
+            overflow: hidden;
+        }
+
+        .bg-icon {
+            position: absolute;
+            font-size: 50px;
+            opacity: 0.2;
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .icon-1 {
+            top: 10%;
+            left: 10%;
+        }
+
+        .icon-2 {
+            bottom: 15%;
+            right: 10%;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 40px;
+            border: 8px solid #FFF9C4;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 85%;
+            max-width: 350px;
+        }
+
+        h1 {
+            color: #81D4FA;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        /* Button Styling */
+        .btn {
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 50px;
+            font-family: 'Comic Sans MS', sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            transition: all 0.2s;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #startBtn {
+            background-color: #A5D6A7;
+            box-shadow: 0 6px 0 #81C784;
+        }
+
+        #stopBtn {
+            background-color: #FFAB91;
+            box-shadow: 0 6px 0 #E57373;
+            display: none;
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+        }
+
+        #status {
+            color: #9FA8DA;
+            font-weight: bold;
+            margin: 15px 0;
+            min-height: 20px;
+        }
+
+        #output {
+            font-size: 22px;
+            font-weight: bold;
+            color: #F48FB1;
+            min-height: 60px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-icon icon-1">🧸</div>
+    <div class="bg-icon icon-2">🍼</div>
+
+    <div class="container">
+        <h1>👶 Baby Translator</h1>
+        <div id="status">Ready!</div>
+        <div id="output">...</div>
+
+        <button id="startBtn" class="btn" onclick="startListening()">Start Recording 🎤</button>
+        <button id="stopBtn" class="btn" onclick="stopListening()">Stop & Translate 🛑</button>
+    </div>
+
+    <script>
+        const FAKE_PHRASES = [
+            "Momina",
+            "Baaku suck his thumb",
+            "Your cheecks so chubby",
+            "Months old Mba",
+            "How old are you",
+            "im just a baby",
+            "nangi chey",
+            "pinch my cheeck",
+            "I am hungry."
+        ];
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
+        if (recognition) {
+            recognition.continuous = true; // Key change: Keeps listening until we stop it
+            recognition.lang = 'en-US';
+        }
+
+        const startBtn = document.getElementById("startBtn");
+        const stopBtn = document.getElementById("stopBtn");
+        const statusDiv = document.getElementById("status");
+        const outputDiv = document.getElementById("output");
+
+        function startListening() {
+            if (!recognition) {
+                outputDiv.innerText = "Mic not supported.";
+                return;
+            }
+
+            try {
+                recognition.start();
+                startBtn.style.display = "none";
+                stopBtn.style.display = "block";
+                statusDiv.innerText = "Listening to baby sounds...";
+                outputDiv.innerText = "👶👂";
+            } catch (e) {
+                console.log("Error starting mic:", e);
+            }
+        }
+
+        function stopListening() {
+            recognition.stop();
+            stopBtn.style.display = "none";
+            statusDiv.innerText = "Analyzing complex data...";
+
+            // Show the fake result after a short "processing" delay
+            setTimeout(() => {
+                const randomPhrase = FAKE_PHRASES[Math.floor(Math.random() * FAKE_PHRASES.length)];
+                outputDiv.innerText = randomPhrase;
+                statusDiv.innerText = "Translation Complete!";
+                startBtn.style.display = "block";
+                startBtn.innerText = "Try Again 🔄";
+            }, 1500);
+        }
+
+        // We don't need onresult to trigger anything automatically anymore
+        // but we add it to prevent errors
+        recognition.onresult = (event) => { /* Just listening... */ };
+
+    </script>
+</body>
+</html>
